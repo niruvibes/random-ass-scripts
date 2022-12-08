@@ -1,11 +1,11 @@
 import argparse
-import imageio.v2 as imageio
-import importlib.util
+import imageio
+import importlib
 import subprocess
 from PIL import Image
 
 # Check if the imageio and Pillow libraries are installed
-if importlib.util.find_spec('imageio') is None or importlib.util.find_spec('Pillow') is None:
+if importlib.find_loader('imageio') is None or importlib.find_loader('Pillow') is None:
     # Install the libraries if they are not installed
     subprocess.run(['pip', 'install', 'imageio'])
     subprocess.run(['pip', 'install', 'Pillow'])
@@ -30,10 +30,19 @@ for filename in args.filenames:
     try:
         # Load each image into memory
         img = Image.open(filename)
+    except FileNotFoundError:
+        # Print an error message if the file does not exist
+        print(f'File not found: {filename}')
+        continue
+    except IOError:
+        # Print an error message if there is a problem reading the file
+        print(f'Error reading file: {filename}')
+        continue
+    try:
         # Resize the image to the specified size
         img = img.resize(args.size)
-        # Convert the image to a NumPy array
-        img = imageio.imread(filename)
+        # Convert the resized image to a NumPy array
+        img = imageio.v2.imread(filename)
         # Add the image to the list of images
         image_list.append(img)
     except:
@@ -41,5 +50,4 @@ for filename in args.filenames:
         print(f'Failed to load image: {filename}')
 
 # Save the image list as a gif
-# Wont support v3 but v2 is imported so as long as that survives
 imageio.mimwrite(args.name + '.gif', image_list, fps=args.fps)
