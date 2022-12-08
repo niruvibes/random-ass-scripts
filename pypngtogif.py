@@ -29,4 +29,4 @@ for filename in args.filenames:
     image_list.append(img)
 
 # Save the image list as a gif
-imageio.mimwrite('animated.gif', image_list, fps=args.fps)
+imageio.save('animated.gif', image_list, fps=args.fps)
