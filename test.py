@@ -29,7 +29,7 @@ image_list = []
 for filename in args.filenames:
     try:
         # Load each image into memory
-        img = Image.open(filename)
+        img = imageio.imread(filename)
     except FileNotFoundError:
         # Print an error message if the file does not exist
         print(f'File not found: {filename}')
@@ -42,9 +42,9 @@ for filename in args.filenames:
         # Resize the image to the specified size
         img = img.resize(args.size)
         # Convert the resized image to a NumPy array
-        img = imageio.v2.imread(filename)
+        img_array = img.to_array()
         # Add the image to the list of images
-        image_list.append(img)
+        image_list.append(img_array)
     except:
         # Print an error message if there was a problem loading the image
         print(f'Failed to load image: {filename}')
