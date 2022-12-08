@@ -1,5 +1,12 @@
 import argparse
 import imageio
+import importlib.util
+import subprocess
+
+# Check if the imageio library is installed
+if importlib.util.find_spec('imageio') is None:
+    # Install the library if it is not installed
+    subprocess.run(['pip', 'install', 'imageio'])
 
 # Create an ArgumentParser object
 parser = argparse.ArgumentParser()
