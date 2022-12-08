@@ -27,14 +27,19 @@ image_list = []
 
 # Iterate over the list of filenames
 for filename in args.filenames:
-    # Load each image into memory
-    img = Image.open(filename)
-    # Resize the image to the specified size
-    img = img.resize(args.size)
-    # Convert the image to a NumPy array
-    img = imageio.imread(filename)
-    # Add the image to the list of images
-    image_list.append(img)
+    try:
+        # Load each image into memory
+        img = Image.open(filename)
+        # Resize the image to the specified size
+        img = img.resize(args.size)
+        # Convert the image to a NumPy array
+        img = imageio.imread(filename)
+        # Add the image to the list of images
+        image_list.append(img)
+    except:
+        # Print an error message if there was a problem loading the image
+        print(f'Failed to load image: {filename}')
 
-# Save the image list as a gif (for some reason this wont support v3)
+# Save the image list as a gif
+# Wont support v3 but v2 is imported so as long as that survives
 imageio.mimwrite(args.name + '.gif', image_list, fps=args.fps)
