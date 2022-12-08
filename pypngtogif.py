@@ -41,4 +41,4 @@ imageio.save('animated.gif', image_list, fps=args.fps)
 
 #usage
 #python [scriptname].py image1.png image2.png image3.png --fps [fps number] --size [sizex] [sizey]
-#python pygif.py image1.png image2.png image3.png --fps 15 --size 320 320
+#python pypngtogif.py image1.png image2.png image3.png --fps 15 --size 320 320
