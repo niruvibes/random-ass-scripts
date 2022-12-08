@@ -15,8 +15,9 @@ parser = argparse.ArgumentParser()
 
 # Add arguments for the filenames, fps, and size
 parser.add_argument('filenames', nargs='+', help='list of filenames to include in the gif')
-parser.add_argument('--fps', type=int, default=10, help='frame rate of the gif (frames per second)')
-parser.add_argument('--size', type=int, nargs=2, default=(640, 480), help='width and height of the gif in pixels')
+parser.add_argument('-n', '--name', default='animated.gif', help='The name of the GIF')
+parser.add_argument('-f', '--fps', type=int, default=10, help='frame rate of the gif (frames per second)')
+parser.add_argument('-s', '--size', type=int, nargs=2, default=(320, 320), help='width and height of the gif in pixels')
 
 # Parse the command-line arguments
 args = parser.parse_args()
@@ -36,4 +37,4 @@ for filename in args.filenames:
     image_list.append(img)
 
 # Save the image list as a gif (for some reason this wont support v3)
-imageio.mimwrite('animated.gif', image_list, fps=args.fps)
+imageio.mimwrite(args.name + '.gif', image_list, fps=args.fps)
