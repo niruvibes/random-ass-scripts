@@ -5,15 +5,19 @@ import subprocess
 import numpy
 from PIL import Image
 
-# Check if the imageio and Pillow libraries are installed
-if importlib.util.find_spec('imageio') is None:
-    # Install the library imageio if they not installed
+# Check for the presence of the imageio library using importlib.util.find_spec
+spec = importlib.util.find_spec('imageio')
+if spec is None:
+    # Install the library imageio if it is not installed
     subprocess.run(['pip', 'install', 'imageio'])
+else:
+    # Import the imageio library if it is installed
+    import imageio
 
 # Check for the presence of the Pillow library using importlib.util.find_spec
 spec = importlib.util.find_spec('Pillow')
 if spec is None:
-    # Install the library pillow if they not installed
+    # Install the library pillow if it is not installed
     subprocess.run(['pip', 'install', 'Pillow'])
 else:
     # Import the Pillow library if it is installed
@@ -36,12 +40,9 @@ image_list = []
 
 # Iterate over the list of filenames
 for filename in args.filenames:
-    #print(args.filenames)
+    # Load each image into memory
     try:
-        #print(filename)
-        # Load each image into memory
         img = imageio.v2.imread(filename)
-        #print(img)
     except FileNotFoundError:
         # Print an error message if the file does not exist
         print(f'File not found: {filename}')
@@ -50,6 +51,8 @@ for filename in args.filenames:
         # Print an error message if there is a problem reading the file
         print(f'Error reading file: {filename}')
         continue
+    
+    # Convert the image to a NumPy array and resize it
     try:
         # Convert to regular image
         img_image = Image.fromarray(img)
