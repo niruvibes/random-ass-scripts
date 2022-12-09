@@ -33,15 +33,15 @@ parser.add_argument('filenames', nargs='+', help='list of filenames to include i
 parser.add_argument('-n', '--name', default='animated.gif', help='The name of the GIF')
 parser.add_argument('-f', '--fps', type=int, default=10, help='frame rate of the gif (frames per second)')
 parser.add_argument('-s', '--size', type=int, nargs=2, default=(320, 320), help='width and height of the gif in pixels')
-parser.add_argument('-o', '--output-directory', default=os.path.dirname(os.path.abspath(__file__)), help='The directory where the output GIF should be saved')
+parser.add_argument('-o', '--output-directory', default=os.path.dirname(os.path.abspath(__file__)), help="The directory where the output GIF should be saved, it should make it if it doesn't exist")
 # Add the `--loop` flag
-parser.add_argument('-l', '--loop', type=int, default=0, help='The number of times the GIF should loop, -1 = infinte, 0 = once, positive = number, cannot work with duration')
-# Add the `--duration` flag
-parser.add_argument('-d', '--duration', type=int, default=None, help='The total duration of the output GIF in seconds, cannot work with loop')
-# Add the `--compression` flag
-parser.add_argument('-c', '--compression', type=int, default=9987, help='The level of compression to be used for the output GIF, cannot work with target-size')
-# Add the `--target-size` flag
-parser.add_argument('-t', '--target-size', type=int, default=None, help='The target size of the output GIF in bytes, cannot work with compression')
+parser.add_argument('-l', '--loop', type=int, default=0, help='The number of times the GIF should loop, 0 = infinte, positive = number')
+# # Add the `--duration` flag
+# parser.add_argument('-d', '--duration', type=int, default=None, help='The total duration of the output GIF in seconds, cannot work with loop')
+# # Add the `--compression` flag
+# parser.add_argument('-c', '--compression', type=int, default=9987, help='The level of compression to be used for the output GIF, cannot work with target-size')
+# # Add the `--target-size` flag
+# parser.add_argument('-t', '--target-size', type=int, default=None, help='The target size of the output GIF in bytes, cannot work with compression')
 
 # Parse the command-line arguments
 args = parser.parse_args()
@@ -59,6 +59,7 @@ for filename in args.filenames:
     file_type = imghdr.what(filename)
     if file_type is None:
         print(f'{filename} is not a valid image file')
+        print('sometimes it works anyway but it might look scuffed :)')
         continue
 
 # Iterate over the list of filenames
@@ -89,46 +90,47 @@ for filename in args.filenames:
         # Print an error message if there was a problem loading the image
         print(f'Failed to load image: {filename}')
 
-# Check if both the --compression and --target-size flags were specified
-if args.compression is not 9987 and args.target_size is not None:
-    print('Error: The --compression and --target-size flags are mutually exclusive')
-    exit()
+# # Check if both the --compression and --target-size flags were specified
+# if args.compression != 9987 and args.target_size is not None:
+#     print('Error: The --compression and --target-size flags are mutually exclusive')
+#     exit()
 
-# Check if the --compression flag was specified
-if args.compression is 9987:
-    # Calculate the total size of the input images in bytes
-    total_size = 0
-    for img in image_list:
-        total_size += img.nbytes
+# # Check if the --compression flag was specified
+# if args.compression == 9987:
+#     # Calculate the total size of the input images in bytes
+#     total_size = 0
+#     for img in image_list:
+#         total_size += img.nbytes
 
-    # Calculate the ratio of the target size to the total size of the input images
-    size_ratio = args.target_size / total_size
+#     # Calculate the ratio of the target size to the total size of the input images
+#     size_ratio = args.target_size / total_size
 
-    # Calculate the level of compression to use based on the size ratio
-    compression = int(size_ratio * 100)
-else:
-    # Use the value of the --compression flag as the level of compression
-    compression = args.compression
+#     # Calculate the level of compression to use based on the size ratio
+#     cmp = int(size_ratio * 100)
+# else:
+#     # Use the value of the --compression flag as the level of compression
+#     cmp = args.compression
 
 
-# Check if both the `--loop` and `--duration` flags were specified
-if args.loop is not None and args.duration is not None:
-    print('Error: The --loop and --duration flags cannot be used together')
-    exit()
+# # Check if both the `--loop` and `--duration` flags were specified
+# if args.loop != 0 and args.duration is not None:
+#     print('Error: The --loop and --duration flags cannot be used together')
+#     exit()
 
-# Check if the `--loop` or `--duration` flags were specified
-if args.loop is not None or args.duration is not None:
-    # Set the `duration` argument to the duration of the output gif in seconds
-    duration = args.duration
-    if args.loop == -1:
-        # Set the duration to None if the gif should loop indefinitely
-        duration = None
-    else:
-        # Calculate the duration of the gif in seconds
-        duration = len(image_list) / args.fps
-        if args.loop > 0:
-            # Multiply the duration by the number of times the gif should loop
-            duration *= args.loop
+# # Check if the `--loop` or `--duration` flags were specified
+# if args.loop != 0 or args.duration is not None:
+#     # Set the `duration` argument to the duration of the output gif in seconds
+#     if args.duration is not None:
+#         duration_var = args.duration
+#     elif args.loop == -1:
+#         # Set the duration to None if the gif should loop indefinitely
+#         duration_var = None
+#     else:
+#         # Calculate the duration of the gif in seconds
+#         duration_var = len(image_list) / args.fps
+#         if args.loop > 0:
+#             # Multiply the duration by the number of times the gif should loop
+#             duration_var *= args.loop
 
 # Create the output directory if it doesn't exist
 if not os.path.isdir(args.output_directory):
@@ -139,14 +141,14 @@ if not os.path.isdir(args.output_directory):
     exit(1)
 
 output_path = os.path.abspath(args.output_directory)
-print(output_path)
-print(args.output_directory)
-imageio.mimwrite(os.path.join(output_path, args.name + '.gif'), image_list, fps=args.fps, loop=args.loop, compression=compression)
+imageio.mimwrite(os.path.join(output_path, args.name + '.gif'), image_list, fps=args.fps, loop=args.loop)
 
 
 
 #usage
 #python create_gif.py img1.jpg img2.png img3.jpeg -n my_gif.gif -f 15 -s 512 512 -o gif_output_dir -l -c 5
 #python pypngtogif.py image1.png image2.png image3.png --name [name of output] --fps [fps of gif] --size [size of output gif] --output-directory [directory to save] -l 3 -c 5
-#note!: the compression and target size flags cannot be used together, the program will exit
 #note!: the duration and  size flags cannot be used together, the program will exitS
+
+#old:
+#note!: the compression and target size flags cannot be used together, the program will exit
