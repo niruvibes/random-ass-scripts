@@ -39,7 +39,7 @@ parser.add_argument('-l', '--loop', type=int, default=0, help='The number of tim
 # Add the `--duration` flag
 parser.add_argument('-d', '--duration', type=int, default=None, help='The total duration of the output GIF in seconds, cannot work with loop')
 # Add the `--compression` flag
-parser.add_argument('-c', '--compression', type=int, default=10, help='The level of compression to be used for the output GIF, cannot work with target-size')
+parser.add_argument('-c', '--compression', type=int, default=9987, help='The level of compression to be used for the output GIF, cannot work with target-size')
 # Add the `--target-size` flag
 parser.add_argument('-t', '--target-size', type=int, default=None, help='The target size of the output GIF in bytes, cannot work with compression')
 
@@ -90,7 +90,7 @@ if args.compression is not None and args.target_size is not None:
     exit()
 
 # Check if the --compression flag was specified
-if args.compression is None:
+if args.compression is 9987:
     # Calculate the total size of the input images in bytes
     total_size = 0
     for img in image_list:
