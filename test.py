@@ -1,14 +1,23 @@
 import argparse
+import importlib.util
 import imageio
-import importlib
 import subprocess
+import numpy
 from PIL import Image
 
 # Check if the imageio and Pillow libraries are installed
-if importlib.find_loader('imageio') is None or importlib.find_loader('Pillow') is None:
-    # Install the libraries if they are not installed
+if importlib.util.find_spec('imageio') is None:
+    # Install the library imageio if they not installed
     subprocess.run(['pip', 'install', 'imageio'])
+
+# Check for the presence of the Pillow library using importlib.util.find_spec
+spec = importlib.util.find_spec('Pillow')
+if spec is None:
+    # Install the library pillow if they not installed
     subprocess.run(['pip', 'install', 'Pillow'])
+else:
+    # Import the Pillow library if it is installed
+    from PIL import Image
 
 # Create an ArgumentParser object
 parser = argparse.ArgumentParser()
@@ -27,9 +36,12 @@ image_list = []
 
 # Iterate over the list of filenames
 for filename in args.filenames:
+    #print(args.filenames)
     try:
+        #print(filename)
         # Load each image into memory
-        img = imageio.imread(filename)
+        img = imageio.v2.imread(filename)
+        #print(img)
     except FileNotFoundError:
         # Print an error message if the file does not exist
         print(f'File not found: {filename}')
@@ -39,10 +51,12 @@ for filename in args.filenames:
         print(f'Error reading file: {filename}')
         continue
     try:
+        # Convert to regular image
+        img_image = Image.fromarray(img)
         # Resize the image to the specified size
-        img = img.resize(args.size)
+        img_resize = img_image.resize(args.size)
         # Convert the resized image to a NumPy array
-        img_array = img.to_array()
+        img_array = numpy.asarray(img_resize)
         # Add the image to the list of images
         image_list.append(img_array)
     except:
