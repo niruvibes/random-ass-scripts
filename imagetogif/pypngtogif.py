@@ -7,19 +7,19 @@ import subprocess
 import numpy
 from PIL import Image
 
-# Check for the presence of the imageio library using importlib.util.find_spec
+# Check if the imageio library is installed using importlib.util.find_spec
 spec = importlib.util.find_spec('imageio')
 if spec is None:
-    # Install the library imageio if it is not installed
+    # Install the imageio library if it is not installed
     subprocess.run(['pip', 'install', 'imageio'])
 else:
     # Import the imageio library if it is installed
     import imageio
 
-# Check for the presence of the Pillow library using importlib.util.find_spec
+# Check if the Pillow library is installed using importlib.util.find_spec
 spec = importlib.util.find_spec('Pillow')
 if spec is None:
-    # Install the library pillow if it is not installed
+    # Install the Pillow library if it is not installed
     subprocess.run(['pip', 'install', 'Pillow'])
 else:
     # Import the Pillow library if it is installed
@@ -28,13 +28,14 @@ else:
 # Create an ArgumentParser object
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-# Add arguments for the filenames, fps, and size
+
+
+# Add arguments for the filenames, fps, size and loop
 parser.add_argument('filenames', nargs='+', help='list of filenames to include in the gif')
 parser.add_argument('-n', '--name', default='animated.gif', help='The name of the GIF')
 parser.add_argument('-f', '--fps', type=int, default=10, help='frame rate of the gif (frames per second)')
 parser.add_argument('-s', '--size', type=int, nargs=2, default=(320, 320), help='width and height of the gif in pixels')
 parser.add_argument('-o', '--output-directory', default=os.path.dirname(os.path.abspath(__file__)), help="The directory where the output GIF should be saved, it should make it if it doesn't exist")
-# Add the `--loop` flag
 parser.add_argument('-l', '--loop', type=int, default=0, help='The number of times the GIF should loop, 0 = infinte, positive = number')
 # # Add the `--duration` flag
 # parser.add_argument('-d', '--duration', type=int, default=None, help='The total duration of the output GIF in seconds, cannot work with loop')
@@ -66,6 +67,7 @@ for filename in args.filenames:
 for filename in args.filenames:
     # Load each image into memory
     try:
+        # Read the image file using imageio
         img = imageio.v2.imread(filename)
     except FileNotFoundError:
         # Print an error message if the file does not exist
@@ -78,7 +80,7 @@ for filename in args.filenames:
     
     # Convert the image to a NumPy array and resize it
     try:
-        # Convert to regular image
+        # Convert the image to a PIL Image object
         img_image = Image.fromarray(img)
         # Resize the image to the specified size
         img_resize = img_image.resize(args.size)
@@ -132,23 +134,34 @@ for filename in args.filenames:
 #             # Multiply the duration by the number of times the gif should loop
 #             duration_var *= args.loop
 
-# Create the output directory if it doesn't exist
+# Check if the output directory exists
+# If not, create it
 if not os.path.isdir(args.output_directory):
     os.makedirs(args.output_directory)
 
+# Check if the output directory is valid
 if not os.path.isdir(args.output_directory):
     print(f'Error: {args.output_directory} is not a valid directory')
     exit(1)
 
+# Create the absolute path for the output file
 output_path = os.path.abspath(args.output_directory)
+
+# Write the images in image_list to the output file
 imageio.mimwrite(os.path.join(output_path, args.name + '.gif'), image_list, fps=args.fps, loop=args.loop)
 
-
-
 #usage
-#python create_gif.py img1.jpg img2.png img3.jpeg -n my_gif.gif -f 15 -s 512 512 -o gif_output_dir -l -c 5
-#python pypngtogif.py image1.png image2.png image3.png --name [name of output] --fps [fps of gif] --size [size of output gif] --output-directory [directory to save] -l 3 -c 5
-#note!: the duration and  size flags cannot be used together, the program will exitS
-
-#old:
-#note!: the compression and target size flags cannot be used together, the program will exit
+#python create_gif.py img1.jpg img2.png img3.jpeg -n my_gif.gif -f 15 -s 512 512 -o C:\ -l 3
+# options:
+#   -h, --help            
+#       show this help message and exit
+#   -n NAME, --name NAME  
+#       The name of the GIF (default: animated.gif)
+#   -f FPS, --fps FPS     
+#       frame rate of the gif (frames per second) (default: 10)
+#   -s SIZE SIZE, --size SIZE SIZE
+#       width and height of the gif in pixels (default: (320, 320))
+#   -o OUTPUT_DIRECTORY, --output-directory OUTPUT_DIRECTORY
+#       The directory where the output GIF should be saved, it should make it if it doesn't exist (default: C:\Users\tharo_ui4bg5f\Documents\GitHub\random-ass-scripts\imagetogif)
+#   -l LOOP, --loop LOOP  
+#       The number of times the GIF should loop, 0 = infinte, positive = number (default: 0)
