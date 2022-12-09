@@ -139,6 +139,8 @@ if not os.path.isdir(args.output_directory):
     exit(1)
 
 output_path = os.path.abspath(args.output_directory)
+print(output_path)
+print(args.output_directory)
 imageio.mimwrite(os.path.join(output_path, args.name + '.gif'), image_list, fps=args.fps, loop=args.loop, compression=compression)
 
 
